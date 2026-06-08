@@ -1,0 +1,17 @@
+{
+  "runs": [
+    {
+      "id": "1",
+      "label": "single fsdb check",
+      "fsdb": "/path/to/inter.fsdb",
+      "signals": [
+        "top_tb.dut.signal_a",
+        "top_tb.dut.signal_b"
+      ],
+      "anchor": {
+        "signal": "top_tb.dut.ctrl.enable",
+        "edge": "0->1"
+      }
+    }
+  ]
+}

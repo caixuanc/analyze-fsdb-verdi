@@ -1,0 +1,6 @@
+# Example cases file for dump_fsdb_vc.sh
+# Format: case_id|fsdb_path|anchor_signal|probe_sig1;probe_sig2;...
+# Lines starting with # are ignored.
+
+1|/nfs/site/disks/km6_PLL_DV_1/users/caixuanc/gppll/rundir/2026_05_19_0326_gppll_regression_frontdoor_frac_/frac_regress_0/km_gppll_pwr_up__GP0_1_test/seed_1440226741/inter.fsdb|top_tb.dut.dut.xbf.xfpll_ctrl.dsm_lock|top_tb.dut.dut.xbf.xiopll_custom.xiopll_core.xmmd.igmotionwrap.gmotionhalf;top_tb.dut.dut.xbf.xfpll_ctrl.pfd_lockrstb
+4|/nfs/site/disks/km6_PLL_DV_1/users/caixuanc/gppll/rundir/2026_05_19_0326_gppll_regression_frontdoor_frac_/DTC_frac_regress_0/km_gppll_pwr_up__GP0_1_test/seed_4105342248/inter.fsdb|top_tb.dut.dut.xbf.xfpll_ctrl.dsm_lock|top_tb.dut.dut.xbf.xiopll_custom.xiopll_core.xmmd.igmotionwrap.gmotionhalf;top_tb.dut.dut.xbf.xfpll_ctrl.pfd_lockrstb

@@ -1,0 +1,49 @@
+{
+  "description": "xdca duty cycle: clkin distorted (report only), clkout calibrated to ~50% (expect)",
+  "fsdbdebug": "/p/psg/eda/synopsys/verdi/V-2023.12/linux64/suse/bin/fsdbdebug",
+  "anchor": {
+    "signal": "top_tb.dut.dut.lock2core",
+    "edge": "0->1"
+  },
+  "checks": [
+    {
+      "type": "duty_cycle",
+      "id": "dca_clkin_report",
+      "label": "clkin duty (informational — distortion expected)",
+      "anchor": {
+        "signal": "top_tb.dut.dut.lock2core",
+        "edge": "0->1"
+      },
+      "signals": [
+        "top_tb.dut.dut.xbf.xiopll_custom.xdca0.clkin",
+        "top_tb.dut.dut.xbf.xiopll_custom.xdca1.clkin"
+      ],
+      "params": { "cycles": 10 }
+    },
+    {
+      "type": "duty_cycle",
+      "id": "dca_clkout_calibrated",
+      "label": "clkout duty (calibrated output — expect ~50%)",
+      "anchor": {
+        "signal": "top_tb.dut.dut.lock2core",
+        "edge": "0->1"
+      },
+      "signals": [
+        "top_tb.dut.dut.xbf.xiopll_custom.xdca0.clkout",
+        "top_tb.dut.dut.xbf.xiopll_custom.xdca1.clkout"
+      ],
+      "params": { "cycles": 10 },
+      "expect": {
+        "duty_pct_min": 45.0,
+        "duty_pct_max": 55.0
+      }
+    }
+  ],
+  "runs": [
+    {
+      "id": "3886076250",
+      "label": "dcc_loaden0",
+      "fsdb": "/path/to/seed_3886076250/inter.fsdb"
+    }
+  ]
+}

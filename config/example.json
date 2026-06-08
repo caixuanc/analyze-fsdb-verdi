@@ -1,0 +1,38 @@
+{
+  "description": "Example multi-FSDB analysis config. Copy and edit paths/signals.",
+  "fsdbdebug": "/p/psg/eda/synopsys/verdi/V-2023.12/linux64/suse/bin/fsdbdebug",
+  "signals": [
+    "top_tb.dut.dut.xbf.xfpll_ctrl.pfd_lockrstb",
+    "top_tb.dut.dut.xbf.xiopll_custom.xiopll_core.xmmd.igmotionwrap.gmotionhalf"
+  ],
+  "anchor": {
+    "signal": "top_tb.dut.dut.xbf.xfpll_ctrl.dsm_lock",
+    "edge": "0->1",
+    "before_offset_fs": 1000,
+    "after_offset_fs": 1000000000
+  },
+  "anchor_defaults": {
+    "edge": "0->1",
+    "toggle_threshold": 8
+  },
+  "runs": [
+    {
+      "id": "1",
+      "label": "example case A",
+      "fsdb": "/path/to/seed_a/inter.fsdb"
+    },
+    {
+      "id": "2",
+      "label": "example case B",
+      "fsdb": "/path/to/seed_b/inter.fsdb",
+      "signals": [
+        "top_tb.dut.dut.xbf.xfpll_ctrl.dsm_lock",
+        "top_tb.dut.dut.xbf.xfpll_ctrl.pfd_lockrstb"
+      ],
+      "anchor": {
+        "signal": "top_tb.dut.dut.xbf.xfpll_ctrl.dsm_lock",
+        "edge": "1->0"
+      }
+    }
+  ]
+}

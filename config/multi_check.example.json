@@ -1,0 +1,64 @@
+{
+  "description": "Example: different checks with different anchors per run.",
+  "checks": [
+    {
+      "type": "duty_cycle",
+      "id": "default_post_lock",
+      "label": "Shared duty check (overridden per run below)",
+      "anchor": {
+        "signal": "top_tb.dut.dut.lock2core",
+        "edge": "0->1"
+      },
+      "signals": [
+        "top_tb.dut.dut.xbf.xiopll_custom.xdca0.clkout"
+      ],
+      "params": { "cycles": 10 }
+    }
+  ],
+  "runs": [
+    {
+      "id": "case_a",
+      "label": "design A — lock2core anchor",
+      "fsdb": "/path/to/case_a/inter.fsdb",
+      "checks": [
+        {
+          "type": "duty_cycle",
+          "id": "case_a_dca1",
+          "label": "DCA1 after lock",
+          "anchor": {
+            "signal": "top_tb.dut.dut.lock2core",
+            "edge": "0->1"
+          },
+          "signals": [
+            "top_tb.dut.dut.xbf.xiopll_custom.xdca1.clkout"
+          ],
+          "params": { "cycles": 20 },
+          "expect": { "duty_pct_min": 49.0, "duty_pct_max": 51.0 }
+        }
+      ]
+    },
+    {
+      "id": "case_b",
+      "label": "design B — different anchor",
+      "fsdb": "/path/to/case_b/inter.fsdb",
+      "checks": [
+        {
+          "type": "duty_cycle",
+          "id": "case_b_post_enable",
+          "label": "Clock duty after enable",
+          "anchor": {
+            "signal": "top_tb.dut.ctrl.enable",
+            "edge": "0->1"
+          },
+          "signals": [
+            "top_tb.dut.clk_div.out"
+          ],
+          "params": {
+            "cycles": 10,
+            "start_offset_fs": 500000
+          }
+        }
+      ]
+    }
+  ]
+}
