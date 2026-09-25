@@ -1,0 +1,18 @@
+#######################################################################################
+# fsdb.xxxxx.log : log primitive debug message of FSDB Reader
+# This is for R&D to analyze when there are issues happening when FSDB reading
+# The corresponding FSDB file is /nfs/site/disks/km5_io_2/users/caixuanc/GPPLL-RTL0.8-WW21/xcvr/km_xcvr_e800d8_ctrl/output_ace/rundir/isolation_test_1/km_xcvr_e800d8_ctrl_pa_isolation_test/seed_306627240/dump.fsdb
+#######################################################################################
+[BASIC]Reader version : Chronologic Simulation VCS Release V-2023.12-SP2-7_Full64
+[BASIC]simulator version : Chronologic Simulation VCS Release V-2023.12-SP2-7_Full64
+[BASIC]dumper version : FSDB Dumper for VCS, Release Verdi_V-2023.12-SP2-7, Linux x86_64/64bit, 04/08/2025
+[THREAD]The MTR thread count is 9
+[READSCOPE]ReadScopeTree calling time is 0
+[READSCOPE]ReadScope_PartialLoad calling time is 0
+[READSCOPE]Scope read by partial load count is 0
+[READSCOPE]Scope read count is 0
+[READSCOPE]Decompressed blk is 0
+[MAXCHAIN]Decompressed cnt 4
+[FSDBGate Info] start
+[FSDBGate Info] Total fhdb_compute_count = 0
+[FSDBGate Info] end

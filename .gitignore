@@ -1,10 +1,12 @@
-cat > ~/.cursor/skills/analyze-fsdb-verdi/.gitignore << 'EOF'
 # Local test outputs
 *.txt
 !scripts/cases.example.txt
 report.txt
 vc_out/
 fsdb_analysis_out/
+
+# Per-user site config (copy from env.example.json)
+config/env.local.json
 
 # FSDB / hierarchy dumps (large, local only)
 *.fsdb
@@ -17,4 +19,3 @@ __pycache__/
 # Editor
 .vscode/
 .idea/
-EOF

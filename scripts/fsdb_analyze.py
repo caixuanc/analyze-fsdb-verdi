@@ -24,6 +24,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fsdb_lib as lib
 import fsdb_checks as checks
+import fsdb_env as env
 
 
 def load_config(path):
@@ -48,7 +49,9 @@ def normalize_config(cfg):
         run["_resolved_checks"] = checks.resolve_checks_for_run(run, cfg)
         out_runs.append(run)
     cfg["runs"] = out_runs
-    cfg.setdefault("fsdbdebug", lib.DEFAULT_FSDBDEBUG)
+    if not cfg.get("fsdbdebug"):
+        path, _src = env.resolve_fsdbdebug()
+        cfg["fsdbdebug"] = path
     cfg.setdefault("anchor_defaults", {
         "edge": "0->1",
         "before_offset_fs": 1000,
@@ -330,12 +333,24 @@ def write_dump_files(results, out_dir):
         print("Wrote {}".format(path), file=sys.stderr)
 
 
+def _first_fsdb_from_cfg(cfg):
+    runs = cfg.get("runs") or []
+    if runs:
+        return runs[0].get("fsdb")
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser(description="Modular FSDB signal analyzer")
     ap.add_argument("-c", "--config", help="JSON config file")
     ap.add_argument("-o", "--output", help="Write report to file (default: stdout)")
     ap.add_argument("--dump-only", action="store_true", help="Only dump raw VC files")
-    ap.add_argument("--fsdbdebug", default=lib.DEFAULT_FSDBDEBUG)
+    ap.add_argument("--fsdbdebug", default=None,
+                    help="Path to fsdbdebug (auto-detected if omitted)")
+    ap.add_argument("--preflight", action="store_true",
+                    help="Check dependencies only; do not analyze")
+    ap.add_argument("--skip-preflight", action="store_true",
+                    help="Skip dependency check before analysis")
 
     ap.add_argument("--fsdb", help="Single FSDB path (CLI mode)")
     ap.add_argument("--signals", help="Comma-separated signal list (CLI mode)")
@@ -358,16 +373,37 @@ def main():
                     help="Optional max duty %% for PASS/FAIL")
 
     args = ap.parse_args()
+    config_fsdbdebug = None
     if args.config:
-        cfg = load_config(args.config)
+        with open(args.config) as f:
+            raw_cfg = json.load(f)
+        config_fsdbdebug = raw_cfg.get("fsdbdebug")
+        cfg = normalize_config(raw_cfg)
     elif args.fsdb and args.signals:
         cfg = config_from_args(args)
         cfg = normalize_config(cfg)
+    elif args.preflight:
+        cfg = {"runs": [], "anchor_defaults": {"toggle_threshold": 8}}
     else:
         ap.error("Provide -c config.json OR --fsdb with --signals")
 
-    cfg["fsdbdebug"] = args.fsdbdebug
-    cfg["anchor_defaults"]["toggle_threshold"] = args.toggle_threshold
+    resolved_path, resolved_source = env.resolve_fsdbdebug(
+        explicit=args.fsdbdebug or config_fsdbdebug)
+    cfg["fsdbdebug"] = resolved_path
+    cfg.setdefault("anchor_defaults", {})["toggle_threshold"] = args.toggle_threshold
+
+    probe_fsdb = args.fsdb or _first_fsdb_from_cfg(cfg)
+    if args.preflight or not args.skip_preflight:
+        pf = env.run_preflight(
+            fsdbdebug=args.fsdbdebug or config_fsdbdebug,
+            fsdb=probe_fsdb,
+        )
+        if args.preflight:
+            print(env.format_preflight_report(pf))
+            sys.exit(0 if pf["ok"] else 1)
+        if not pf["ok"]:
+            print(env.format_preflight_report(pf), file=sys.stderr)
+            sys.exit(1)
 
     results = [analyze_run(r, cfg, dump_only=args.dump_only) for r in cfg["runs"]]
 

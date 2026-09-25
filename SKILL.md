@@ -13,9 +13,26 @@ Config-driven workflow: **you define FSDB path(s) and signal(s)**; the tool reso
 
 ## Prerequisites
 
+Run **preflight** first (auto-runs before analysis unless `--skip-preflight`):
+
+```bash
+cd ~/.cursor/skills/analyze-fsdb-verdi/scripts
+python3 fsdb_env.py
+# or: python3 fsdb_analyze.py --preflight
+# optional FSDB probe: python3 fsdb_env.py --fsdb /path/to/inter.fsdb
+```
+
+Preflight checks: Python 3, `fsdbdebug` (auto-resolved), optional ARC/Verdi discovery.
+
+**Resolution order for `fsdbdebug`:** `--fsdbdebug` / config → `$FSDBDEBUG` → `config/env.local.json` → default path → `PATH` → `arc resource-use`.
+
+If preflight fails, wrap commands in ARC shell (example):
+
 ```bash
 /p/psg/ctools/arc/2019.1/bin/arc shell --no-inherit km_dv/2025WW48 synopsys_verdi/V-2023.12 -- <command>
 ```
+
+Colleagues: copy `config/env.example.json` → `config/env.local.json` and edit paths.
 
 Primary backend: **`fsdbdebug`** (`-hier_tree`, `-vc -vidcode`). See [reference.md](reference.md).
 
@@ -60,10 +77,12 @@ python3 fsdb_analyze.py -c my_analysis.json --dump-only -o ./vc_out
 ## Agent workflow
 
 ```
+- [ ] Run preflight: `python3 scripts/fsdb_env.py` (or `--preflight` on fsdb_analyze.py)
+- [ ] If NOT READY: use suggested ARC shell cmd, or help user create config/env.local.json
 - [ ] Confirm FSDB paths exist
 - [ ] Get signal list + behavior question from user (anchor edge, duty cycle, timeline)
 - [ ] Build JSON config with `checks[]` OR CLI args (`--duty-cycle`)
-- [ ] Run fsdb_analyze.py (arc shell if needed; fsdbdebug may work directly)
+- [ ] Run fsdb_analyze.py (preflight runs automatically; use arc shell if preflight says needed)
 - [ ] Deliver report.txt / stdout; explain anchor status, check PASS/FAIL, NOT_FOUND signals
 ```
 
@@ -111,6 +130,8 @@ GPPLL / km_gppll examples (dsm_lock vs final_lock, DTC paths): [examples/km_gppl
 
 | Symptom | Action |
 |---------|--------|
+| Preflight NOT READY | Run `python3 fsdb_env.py`; follow suggestions; copy `env.example.json` → `env.local.json` |
+| fsdbdebug not found | Set `FSDBDEBUG`, or `arc shell ... synopsys_verdi/V-2023.12 --` |
 | Signal NOT_FOUND | Grep `fsdbdebug -hier_tree` for exact hierarchy |
 | Empty VC | Use `2>&1` with fsdbdebug; confirm vid from **this** FSDB |
 | No anchor edge | Try different `edge` or another anchor signal |

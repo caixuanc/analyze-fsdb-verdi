@@ -24,9 +24,17 @@ Each check is self-contained: its own `anchor`, `signals`, `params`, and optiona
 - Shared FSDB across cases → duplicate paths in config, different labels
 - Different designs / anchors → use per-run `checks[]` overrides
 
+## Environment / preflight
+
+- `scripts/fsdb_env.py` — dependency preflight and `fsdbdebug` auto-detection
+- Per-site overrides: `config/env.local.json` (see `config/env.example.json`)
+- Run before sharing: `python3 scripts/fsdb_env.py`
+
 ## Testing
 
 ```bash
+python3 fsdb_env.py
+python3 fsdb_analyze.py --preflight
 python3 fsdb_analyze.py -c config/single.example.json
 python3 fsdb_analyze.py -c config/duty_cycle.example.json -o /tmp/report.txt
 python3 fsdb_analyze.py --fsdb /path/to/inter.fsdb \

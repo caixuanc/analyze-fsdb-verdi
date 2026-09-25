@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "fsdb_analyze.py", line 425, in <module>
+    main()
+  File "fsdb_analyze.py", line 408, in main
+    results = [analyze_run(r, cfg, dump_only=args.dump_only) for r in cfg["runs"]]
+  File "fsdb_analyze.py", line 408, in <listcomp>
+    results = [analyze_run(r, cfg, dump_only=args.dump_only) for r in cfg["runs"]]
+  File "fsdb_analyze.py", line 164, in analyze_run
+    from_v, to_v = lib.parse_anchor_edge(edge)
+  File "/nfs/site/disks/km5_io_2/users/caixuanc/.cursor/skills/analyze-fsdb-verdi/scripts/fsdb_lib.py", line 85, in parse_anchor_edge
+    raise ValueError("anchor edge must look like 0->1 or 1->0")
+ValueError: anchor edge must look like 0->1 or 1->0

@@ -5,8 +5,7 @@ import re
 import subprocess
 import json
 
-
-DEFAULT_FSDBDEBUG = "/p/psg/eda/synopsys/verdi/V-2023.12/linux64/suse/bin/fsdbdebug"
+from fsdb_env import DEFAULT_FSDBDEBUG, resolve_fsdbdebug
 
 
 def xtag_to_fs(hi, lo):

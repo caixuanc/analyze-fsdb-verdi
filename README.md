@@ -99,6 +99,7 @@ analyze-fsdb-verdi/
 │
 └── scripts/
     ├── fsdb_analyze.py       ★ main entry point
+    ├── fsdb_env.py           dependency preflight + tool auto-detection
     ├── fsdb_lib.py           VC parsing, anchor, duty-cycle math
     ├── fsdb_checks.py        pluggable check registry
     ├── dump_fsdb_vc.sh       legacy shell wrapper
@@ -117,23 +118,37 @@ analyze-fsdb-verdi/
 ## Prerequisites
 
 1. **Python 3** (any recent version with stdlib)
-2. **`fsdbdebug`** from Synopsys Verdi — default path baked in:
-   ```
-   /p/psg/eda/synopsys/verdi/V-2023.12/linux64/suse/bin/fsdbdebug
-   ```
-3. **Arc shell** (Intel environment) — may be required on some machines:
-   ```bash
-   /p/psg/ctools/arc/2019.1/bin/arc shell --no-inherit km_dv/2025WW48 synopsys_verdi/V-2023.12 -- <command>
-   ```
-   On other machines `fsdbdebug` may run directly without arc shell.
+2. **`fsdbdebug`** from Synopsys Verdi — auto-detected (see below)
+3. **Arc shell** (Intel environment) — optional if `fsdbdebug` is directly executable
 
-**Verify access:**
+### Preflight (dependency check)
 
 ```bash
-fsdbdebug -info /path/to/inter.fsdb
+python3 scripts/fsdb_env.py
+python3 scripts/fsdb_env.py --fsdb /path/to/inter.fsdb   # also probe FSDB
+python3 scripts/fsdb_analyze.py --preflight              # same check via main entry
 ```
 
-You should see FSDB version, scale unit, and simulation date.
+Preflight verifies Python, locates `fsdbdebug`, tests it runs, discovers ARC/Verdi if needed, and prints **READY** or **NOT READY** with fix suggestions.
+
+**Auto-resolution order for `fsdbdebug`:**
+
+1. `--fsdbdebug` CLI flag or `"fsdbdebug"` in JSON config
+2. `$FSDBDEBUG` environment variable
+3. `config/env.local.json` (per-user site overrides)
+4. Built-in default path (`V-2023.12`)
+5. `fsdbdebug` on `PATH`
+6. `arc resource-use synopsys_verdi/<version>` PATH discovery
+
+**Per-site config for colleagues:** copy `config/env.example.json` to `config/env.local.json` and edit `fsdbdebug`, `arc_bin`, `arc_verdi_resource`, `arc_worksets`.
+
+**Arc shell** (when preflight suggests it):
+
+```bash
+/p/psg/ctools/arc/2019.1/bin/arc shell --no-inherit km_dv/2025WW48 synopsys_verdi/V-2023.12 -- <command>
+```
+
+Analysis runs preflight automatically before each run (use `--skip-preflight` to bypass).
 
 ---
 
@@ -454,9 +469,10 @@ git clone <repo-url> ~/.cursor/skills/analyze-fsdb-verdi
 ### What colleagues need
 
 1. This README
-2. Access to `fsdbdebug` (Verdi V-2023.12 workset)
-3. A copied config template with their FSDB paths
-4. (Optional) Cursor for agent-assisted analysis
+2. Run `python3 scripts/fsdb_env.py` — fix anything marked NOT READY
+3. (Optional) `config/env.local.json` from `env.example.json` for non-default paths
+4. A copied analysis config template with their FSDB paths
+5. (Optional) Cursor for agent-assisted analysis
 
 ---
 
@@ -464,6 +480,7 @@ git clone <repo-url> ~/.cursor/skills/analyze-fsdb-verdi
 
 | Symptom | Likely cause | Action |
 |---------|--------------|--------|
+| Preflight NOT READY | `fsdbdebug` not on host PATH | Run `fsdb_env.py`; use ARC shell or `env.local.json` |
 | `Signal NOT_FOUND` | Wrong hierarchy path | `fsdbdebug -hier_tree FSDB \| grep signal_name` |
 | `anchor not found or no VC` | Signal not dumped to FSDB | Check `novas_dump.log` dump scope |
 | `no 0->1 on anchor` | Edge never occurred | Try different edge or anchor signal |
@@ -492,8 +509,8 @@ git clone <repo-url> ~/.cursor/skills/analyze-fsdb-verdi
 # Install
 cp -r analyze-fsdb-verdi ~/.cursor/skills/
 
-# Verify
-fsdbdebug -info /path/to/inter.fsdb
+# Verify dependencies
+python3 ~/.cursor/skills/analyze-fsdb-verdi/scripts/fsdb_env.py
 
 # Run (config)
 python3 ~/.cursor/skills/analyze-fsdb-verdi/scripts/fsdb_analyze.py \

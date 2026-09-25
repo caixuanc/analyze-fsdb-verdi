@@ -9,7 +9,18 @@ JSON config drives `scripts/fsdb_analyze.py`. One file can describe **one or man
 | `runs` | yes* | List of per-FSDB runs (alias: `fsdbs`) |
 | `signals` | no | Default probe list for all runs |
 | `anchor` | no | Default anchor for all runs |
-| `fsdbdebug` | no | Path to `fsdbdebug` binary |
+| `fsdbdebug` | no | Path to `fsdbdebug` binary (auto-detected if omitted) |
+
+## Site environment (`config/env.local.json`)
+
+Optional per-user / per-site file (copy from `config/env.example.json`). Not part of analysis JSON; loaded automatically by preflight.
+
+| Field | Description |
+|-------|-------------|
+| `fsdbdebug` | Override default `fsdbdebug` path |
+| `arc_bin` | Path to `arc` binary |
+| `arc_verdi_resource` | e.g. `synopsys_verdi/V-2023.12` for `arc resource-use` |
+| `arc_worksets` | List of worksets for recommended `arc shell` command |
 | `anchor_defaults` | no | Default edge, offsets, toggle threshold |
 
 \* Or use CLI: `--fsdb` + `--signals` without a config file.
